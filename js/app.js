@@ -1,7 +1,8 @@
 //Attrib
-let map, location2=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false,arrayContent;
+let map, location2=[], locationCoord=[], listTitle = [], listContent=[], listCoord=[], markers = [], flag=false,arrayContent;
 var market;
-var infowindow=[];
+var infowindow;
+var infowindows=[];
 arrayContent=["plaza principal de trinidad","colegio cuadrangular fundado el xxxx","areopuerto de la ciudad","arroyo san juan","iglesia cuadrangular"];
 //main
 $(document).ready(function(){
@@ -64,16 +65,16 @@ function inizileArray(location){
 //SOLUCIONAR NO SALEN LOS MENSAGES QUE DEBEN CUANDO SE HACE BUSQUEDA
 function markMessage(x,content){
   //alert(x);
-  infowindow[x]= new google.maps.InfoWindow({
+ /* infowindow= new google.maps.InfoWindow({
     content: content[x]
-  });
+  });*/
   markers[x].addListener('click', function() {
-    infowindow[x].open(map, markers[x]);
+    infowindows[x].open(map, markers[x]);
     toggleBounce(x);
     });
 }
 //create the mark in the map
-function mark(title, coord, pos){
+function mark(title, coord, con){
   console.log(coord);
   
   market= new google.maps.Marker({
@@ -84,9 +85,13 @@ function mark(title, coord, pos){
     animation: google.maps.Animation.DROP
   });
     markers.push(market); 
-    
+  infowindow= new google.maps.InfoWindow({
+      content: con
+    });
+    infowindows.push(infowindow);
+    console.log(infowindows);  
 }
-//SOLUCIONAR NO SALTAN LOS QUE DEBEN
+
 function toggleBounce(x) {
   if (markers[x].getAnimation() !== null) {
     markers[x].setAnimation(null);
@@ -107,29 +112,34 @@ function resetMark()
 {
   setMapAll(null);
   markers = [];
+  infowindows=[];
 }
 //search for a string given by the input
 function findForChar(val)
 {
   listTitle=[];
   listCoord=[];
+  listContent=[];
+
   let flag = false;
     for(let x=0; x<location2.length;x++)
     {       
       if(location2[x].toUpperCase().indexOf(val.toUpperCase())>-1)
       {
           listTitle[x]=location2[x];    
-          listCoord[x]=locationCoord[x]; 
+          listCoord[x]=locationCoord[x];
+          listContent[x]=arrayContent[x]; 
           flag=true;  
       }
   }
+  console.log(listContent);
 }
 //create the links in the menu
-function addInMenu(listDestiny,listCoordMark)
+function addInMenu(listDestiny,listCoordMark, listCont)
 {
   resetMark();
   removeInMenu();
-  let d, c;
+  let d, c,co;
   for(let x=0;x<listDestiny.length;x++)
   {
     if(listDestiny[x]!=undefined)
@@ -140,7 +150,9 @@ function addInMenu(listDestiny,listCoordMark)
       console.log(d);
       c=listCoordMark[x];
       console.log(c);
-      mark(d,c,x);
+      co=listCont[x];
+      console.log(co);
+      mark(d,c,co);
     }
   }
   setMapAll(map);
@@ -161,7 +173,7 @@ function desployMenu(e){
   if(e.which===13)
   { 
     if(flag===false){
-      addInMenu(location2, locationCoord);
+      addInMenu(location2, locationCoord, listContent);
       showMenu();
       flag=true;
     }   
@@ -182,6 +194,6 @@ function desployMenu(e){
   else {
     showMenu();
     findForChar($('#txtFind').val());
-    addInMenu(listTitle, listCoord);
+    addInMenu(listTitle, listCoord, listContent);
   }
 }
