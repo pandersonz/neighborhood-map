@@ -1,25 +1,31 @@
 //Attrib
-let map, location2=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false;
+let map, location2=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false,arrayContent;
+var market;
+var infowindow=[];
+arrayContent=["plaza principal de trinidad","colegio cuadrangular fundado el xxxx","areopuerto de la ciudad","arroyo san juan","iglesia cuadrangular"];
 //main
 $(document).ready(function(){
 $('#txtFind').click(function(e){
   //alert('entro');
   if($('#menuFind').hasClass('MenuFind'))
   {
-    $('#menuFind').removeClass();
-    $('#menuFind').addClass('MenuFindHidden');
+    hideMenu();
+    resetMark(null);
+    flag=false;
+    removeInMenu();
   }
   else {
-    $('#menuFind').removeClass();
-    $('#menuFind').addClass('MenuFind');
+    showMenu();
   }
 });
 $('#txtFind').keyup(function(e){
   desployMenu(e);
 });
+
 });
 //function
 //initialize the map
+
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: -14.834991, lng: -64.903790},
@@ -33,6 +39,17 @@ function initMap() {
     {title: 'Church Cuadrangular',  location:{lat: -14.835098, lng: -64.907695} },
   ]; 
   inizileArray(location);
+  
+}
+function showMenu()
+{
+  $('#menuFind').removeClass();
+  $('#menuFind').addClass('MenuFind');
+}
+function hideMenu()
+{
+  $('#menuFind').removeClass();
+  $('#menuFind').addClass('MenuFindHidden');
 }
 //initialize the array
 function inizileArray(location){
@@ -44,21 +61,45 @@ function inizileArray(location){
   console.log(location2);
   console.log(locationCoord);
 }
+//SOLUCIONAR NO SALEN LOS MENSAGES QUE DEBEN CUANDO SE HACE BUSQUEDA
+function markMessage(x,content){
+  //alert(x);
+  infowindow[x]= new google.maps.InfoWindow({
+    content: content[x]
+  });
+  markers[x].addListener('click', function() {
+    infowindow[x].open(map, markers[x]);
+    toggleBounce(x);
+    });
+}
 //create the mark in the map
 function mark(title, coord, pos){
   console.log(coord);
-  var market;
+  
   market= new google.maps.Marker({
     position: coord,
     map: map,
-    title: title
+    title: title,
+    draggable: true,
+    animation: google.maps.Animation.DROP
   });
     markers.push(market); 
+    
+}
+//SOLUCIONAR NO SALTAN LOS QUE DEBEN
+function toggleBounce(x) {
+  if (markers[x].getAnimation() !== null) {
+    markers[x].setAnimation(null);
+  } else {
+    markers[x].setAnimation(google.maps.Animation.BOUNCE);
+  }
 }
 //show or remove mark dependent of the parameter
-function setMapAll(map) {
+function setMapAll(map,content) {
+  //alert(markers.length);
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
+    markMessage(i,arrayContent);
   }
 }
 //send parameter to setMapAll for remove mark of the map
@@ -93,7 +134,8 @@ function addInMenu(listDestiny,listCoordMark)
   {
     if(listDestiny[x]!=undefined)
     {
-      $('#menuFind').append("<p style='color: white'>"+listDestiny[x]+"</p>");    
+      var idButtom="buttom"+x;
+      $('#menuFind').append("<div class='buttom' id='"+idButtom.toString()+"' onClick=onlyOneMark("+x+")><p style='color: white'>"+listDestiny[x]+"</p></div>");    
       d=listDestiny[x];
       console.log(d);
       c=listCoordMark[x];
@@ -102,6 +144,13 @@ function addInMenu(listDestiny,listCoordMark)
     }
   }
   setMapAll(map);
+}
+//select one mark with one click in its name
+function onlyOneMark(id)
+{
+var idjQuery = "#buttom"+id+" p";
+$('#txtFind').val($(idjQuery.toString()).html());
+desployMenu($('#txtFind').val());
 }
 function removeInMenu(){
   $('#menuFind').empty();
@@ -113,24 +162,25 @@ function desployMenu(e){
   { 
     if(flag===false){
       addInMenu(location2, locationCoord);
+      showMenu();
       flag=true;
     }   
     else{
       resetMark(null);
       flag=false;
       removeInMenu();
+      hideMenu();
     }
     
   }
-  else if(e.which===8)
-  {
-    if($('#txtFind').val()==="")
-    {
+  else if(e.which===8 && $('#txtFind').val()==="")
+  {   
       resetMark(null);
-      removeInMenu();
-    }
+      removeInMenu(); 
+      hideMenu();  
   }
   else {
+    showMenu();
     findForChar($('#txtFind').val());
     addInMenu(listTitle, listCoord);
   }
