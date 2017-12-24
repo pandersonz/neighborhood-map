@@ -1,13 +1,22 @@
 //Attrib
-let map, location2=[], locationCoord=[], listTitle = [], listContent=[], listCoord=[], markers = [], flag=false,arrayContent;
-var market;
-var infowindow;
-var infowindows=[];
-arrayContent=["plaza principal de trinidad","colegio cuadrangular fundado el xxxx","areopuerto de la ciudad","arroyo san juan","iglesia cuadrangular"];
+let map, location2=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false, cc,tt,tFind;
+var market, infowindow, infowindows=[];
+//inicialize obj viewmodel
+tFind=new viewModel();
+//Attrib API fourSquare
+var  clientID = "U2EL1IZE2JQUXYE1JRS2RXS3KS3UPRJ0NKAB5SSOD5GATE3T";
+var  clientSecret ="IPD1HZM0QMIGAVLSDKHBNNFKQ02NEE4RVQ3F2PF222MWO1MC";
+//Asigned attribute id and secret to url
+function apiUrl(idclient,secretclient,cor,ti)
+{
+var apiUrl ='https://api.foursquare.com/v2/venues/search?ll=' + cor.lat + ',' + cor.lng + 
+            '&client_id=' + idclient +'&client_secret=' + secretclient + '&query=' + ti +
+            '&v=20170708' + '&m=foursquare';
+return apiUrl.toString();
+}
 //main
 $(document).ready(function(){
 $('#txtFind').click(function(e){
-  //alert('entro');
   if($('#menuFind').hasClass('MenuFind'))
   {
     hideMenu();
@@ -30,14 +39,16 @@ $('#txtFind').keyup(function(e){
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: -14.834991, lng: -64.903790},
-    zoom: 13
+    zoom: 15
   }); 
+
   var location = [
-    {title: 'Central Place',  location:{lat: -14.834991, lng: -64.903790} },
-    {title: 'School Cuadrangular',  location:{lat: -14.826528, lng: -64.891210} },
-    {title: 'Areoport',  location:{lat: -14.822927, lng: -64.919311} },
-    {title: 'Stream San Juan',  location:{lat: -14.836302, lng: -64.901967} },
-    {title: 'Church Cuadrangular',  location:{lat: -14.835098, lng: -64.907695} },
+    {title: 'Plaza Principal José Ballivián',  location:{lat: -14.834991, lng: -64.903790} },
+    {title: 'Saltenas Chingolas',  location:{lat: -14.835045, lng: -64.906800} },
+    {title: 'El Tabano',  location:{lat: -14.838037, lng: -64.908804} },
+    {title: 'La Estancia',  location:{lat: -14.839857, lng: -64.903700} },
+    {title: 'Pacumuto',  location:{lat:  -14.829196, lng: -64.906162} },
+    {title: 'Aeropuerto de trinidad',  location:{lat:  -14.821583, lng: -64.917416} },
   ]; 
   inizileArray(location);
   
@@ -59,23 +70,17 @@ function inizileArray(location){
     location2[x]=location[x].title;
     locationCoord[x] = location[x].location;
   }
-  console.log(location2);
-  console.log(locationCoord);
 }
-//SOLUCIONAR NO SALEN LOS MENSAGES QUE DEBEN CUANDO SE HACE BUSQUEDA
+
 function markMessage(x,content){
-  //alert(x);
- /* infowindow= new google.maps.InfoWindow({
-    content: content[x]
-  });*/
   markers[x].addListener('click', function() {
     infowindows[x].open(map, markers[x]);
-    toggleBounce(x);
+    AnimationMark(x);
     });
 }
 //create the mark in the map
-function mark(title, coord, con){
-  console.log(coord);
+function mark(title, coord){
+ 
   
   market= new google.maps.Marker({
     position: coord,
@@ -84,15 +89,14 @@ function mark(title, coord, con){
     draggable: true,
     animation: google.maps.Animation.DROP
   });
-    markers.push(market); 
-  infowindow= new google.maps.InfoWindow({
-      content: con
-    });
-    infowindows.push(infowindow);
-    console.log(infowindows);  
+  markers.push(market); 
+  
+  infowindow= new google.maps.InfoWindow();
+  apiFourSquare(market,coord,title,infowindow);
+  infowindows.push(infowindow);
 }
 
-function toggleBounce(x) {
+function AnimationMark(x) {
   if (markers[x].getAnimation() !== null) {
     markers[x].setAnimation(null);
   } else {
@@ -100,11 +104,10 @@ function toggleBounce(x) {
   }
 }
 //show or remove mark dependent of the parameter
-function setMapAll(map,content) {
-  //alert(markers.length);
+function setMapAll(map,c) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
-    markMessage(i,arrayContent);
+    markMessage(i);
   }
 }
 //send parameter to setMapAll for remove mark of the map
@@ -119,7 +122,6 @@ function findForChar(val)
 {
   listTitle=[];
   listCoord=[];
-  listContent=[];
 
   let flag = false;
     for(let x=0; x<location2.length;x++)
@@ -128,14 +130,13 @@ function findForChar(val)
       {
           listTitle[x]=location2[x];    
           listCoord[x]=locationCoord[x];
-          listContent[x]=arrayContent[x]; 
           flag=true;  
       }
   }
-  console.log(listContent);
+ 
 }
 //create the links in the menu
-function addInMenu(listDestiny,listCoordMark, listCont)
+function addInMenu(listDestiny,listCoordMark)
 {
   resetMark();
   removeInMenu();
@@ -147,22 +148,22 @@ function addInMenu(listDestiny,listCoordMark, listCont)
       var idButtom="buttom"+x;
       $('#menuFind').append("<div class='buttom' id='"+idButtom.toString()+"' onClick=onlyOneMark("+x+")><p style='color: white'>"+listDestiny[x]+"</p></div>");    
       d=listDestiny[x];
-      console.log(d);
       c=listCoordMark[x];
-      console.log(c);
-      co=listCont[x];
-      console.log(co);
+      cc=c;
+      tt=co;
       mark(d,c,co);
+      
     }
   }
-  setMapAll(map);
+  setMapAll(map,cc);
 }
 //select one mark with one click in its name
 function onlyOneMark(id)
 {
 var idjQuery = "#buttom"+id+" p";
-$('#txtFind').val($(idjQuery.toString()).html());
-desployMenu($('#txtFind').val());
+tFind.find=$(idjQuery.toString()).html();
+console.log(tFind.find);
+desployMenu(0);
 }
 function removeInMenu(){
   $('#menuFind').empty();
@@ -173,7 +174,7 @@ function desployMenu(e){
   if(e.which===13)
   { 
     if(flag===false){
-      addInMenu(location2, locationCoord, listContent);
+      addInMenu(location2, locationCoord);
       showMenu();
       flag=true;
     }   
@@ -185,7 +186,7 @@ function desployMenu(e){
     }
     
   }
-  else if(e.which===8 && $('#txtFind').val()==="")
+  else if(e.which===8 && tFind.find==="")
   {   
       resetMark(null);
       removeInMenu(); 
@@ -193,7 +194,29 @@ function desployMenu(e){
   }
   else {
     showMenu();
-    findForChar($('#txtFind').val());
-    addInMenu(listTitle, listCoord, listContent);
+    findForChar(tFind.find);
+    addInMenu(listTitle, listCoord);
   }
+}
+
+//Functions api
+//fourSquare
+function apiFourSquare(mar,c,t,info)
+{
+ var url= apiUrl(clientID,clientSecret,c,t).toString();
+$.getJSON(url).done(function(mar) {
+  var response = mar.response.venues[0];
+  self.msgFourSquare =
+      '<h4>' + response.name +
+      '</h4>' + '<div>' +
+      '<p><h6>Address:</h6> ' + response.location.formattedAddress[0] + '</p>' +
+      '<p><h6>Category:</h6> ' + response.categories[0].shortName +'</p>' + 
+      '</div>';
+  info.setContent( self.msgFourSquare);
+}).fail(function() {
+  //alert for when foursquare fail
+  alert(
+      "The data could not be loaded from FourSquare, please try to reload the page."
+  );
+});
 }

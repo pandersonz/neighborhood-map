@@ -5,24 +5,22 @@
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <link href="css/style.css" rel="stylesheet">
+    <script src="lib/knockout-min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/viewModel.js" defer="defer"></script>
+    <script src="js/app.js" defer="defer"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBU9_t5K1z6XJVyDHJjl4yphHf2MkAnav0&callback=initMap"
     async defer></script>
   </head>
   <body>
     <div id="find">
-      <input id='txtFind' type="text" />
+      <input id='txtFind' type="text" data-bind="value: find"/>
     </div>
     <div id="content">
     <div id="menuFind" class="MenuFindHidden">
 
     </div>
     <div id="map" class="mapComplete"></div>
-    <script>
-      
-    </script>
-
   </div>
   </body>
 </html>
