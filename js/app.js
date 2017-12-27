@@ -1,8 +1,7 @@
 //Attrib
-let map, location2=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false, cc,tt,tFind;
+let map, locationTitle=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false;
 var market, infowindow, infowindows=[];
-//inicialize obj viewmodel
-tFind=new viewModel();
+
 //Attrib API fourSquare
 var  clientID = "U2EL1IZE2JQUXYE1JRS2RXS3KS3UPRJ0NKAB5SSOD5GATE3T";
 var  clientSecret ="IPD1HZM0QMIGAVLSDKHBNNFKQ02NEE4RVQ3F2PF222MWO1MC";
@@ -23,9 +22,11 @@ $('#txtFind').click(function(e){
     resetMark(null);
     flag=false;
     removeInMenu();
+    viewModel.filterQuery("");
   }
   else {
     showMenu();
+    viewModel.filterQuery("");
   }
 });
 $('#txtFind').keyup(function(e){
@@ -67,8 +68,8 @@ function hideMenu()
 function inizileArray(location){
   for(let x=0;x<location.length;x++)
   {
-    location2[x]=location[x].title;
-    locationCoord[x] = location[x].location;
+    locationTitle[x]=location[x].title;
+    locationCoord[x]=location[x].location;
   }
 }
 
@@ -104,7 +105,7 @@ function AnimationMark(x) {
   }
 }
 //show or remove mark dependent of the parameter
-function setMapAll(map,c) {
+function setMapAll(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
     markMessage(i);
@@ -120,15 +121,17 @@ function resetMark()
 //search for a string given by the input
 function findForChar(val)
 {
+
+  
   listTitle=[];
   listCoord=[];
-
+console.log(val);
   let flag = false;
-    for(let x=0; x<location2.length;x++)
+    for(let x=0; x<locationTitle.length;x++)
     {       
-      if(location2[x].toUpperCase().indexOf(val.toUpperCase())>-1)
+      if(locationTitle[x].toUpperCase().indexOf(val.toUpperCase())>-1)
       {
-          listTitle[x]=location2[x];    
+          listTitle[x]=locationTitle[x];    
           listCoord[x]=locationCoord[x];
           flag=true;  
       }
@@ -140,29 +143,28 @@ function addInMenu(listDestiny,listCoordMark)
 {
   resetMark();
   removeInMenu();
-  let d, c,co;
+  let destiny, coordDestiny;
   for(let x=0;x<listDestiny.length;x++)
   {
     if(listDestiny[x]!=undefined)
     {
       var idButtom="buttom"+x;
       $('#menuFind').append("<div class='buttom' id='"+idButtom.toString()+"' onClick=onlyOneMark("+x+")><p style='color: white'>"+listDestiny[x]+"</p></div>");    
-      d=listDestiny[x];
-      c=listCoordMark[x];
-      cc=c;
-      tt=co;
-      mark(d,c,co);
+      destiny=listDestiny[x];
+      coordDestiny=listCoordMark[x];
+      
+      
+      mark(destiny,coordDestiny);
       
     }
   }
-  setMapAll(map,cc);
+  setMapAll(map);
 }
 //select one mark with one click in its name
 function onlyOneMark(id)
 {
 var idjQuery = "#buttom"+id+" p";
-tFind.find=$(idjQuery.toString()).html();
-console.log(tFind.find);
+viewModel.filterQuery($(idjQuery.toString()).html());
 desployMenu(0);
 }
 function removeInMenu(){
@@ -174,7 +176,7 @@ function desployMenu(e){
   if(e.which===13)
   { 
     if(flag===false){
-      addInMenu(location2, locationCoord);
+      addInMenu(locationTitle, locationCoord);
       showMenu();
       flag=true;
     }   
@@ -186,7 +188,7 @@ function desployMenu(e){
     }
     
   }
-  else if(e.which===8 && tFind.find==="")
+  else if(e.which===8 && viewModel.filterQuery()==="")
   {   
       resetMark(null);
       removeInMenu(); 
@@ -194,13 +196,19 @@ function desployMenu(e){
   }
   else {
     showMenu();
-    findForChar(tFind.find);
+    findForChar(viewModel.filterQuery());  
     addInMenu(listTitle, listCoord);
   }
 }
 
 //Functions api
 //fourSquare
+/* parameter:
+mar=Marked
+c=Coordenade
+t=title
+info=infoWindows
+*/
 function apiFourSquare(mar,c,t,info)
 {
  var url= apiUrl(clientID,clientSecret,c,t).toString();
@@ -220,3 +228,5 @@ $.getJSON(url).done(function(mar) {
   );
 });
 }
+
+

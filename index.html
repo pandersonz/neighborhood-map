@@ -14,10 +14,10 @@
   </head>
   <body>
     <div id="find">
-      <input id='txtFind' type="text" data-bind="value: find"/>
+      <input id='txtFind' type="text" data-bind="value: filterQuery, valueUpdate:'afterkeydown'" placeholder="Filter"/>
     </div>
     <div id="content">
-    <div id="menuFind" class="MenuFindHidden">
+    <div id="menuFind" class="MenuFindHidden" >
 
     </div>
     <div id="map" class="mapComplete"></div>
