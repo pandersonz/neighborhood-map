@@ -1,6 +1,6 @@
 //Attrib
-let map, locationTitle=[], locationCoord=[], listTitle = [], listCoord=[], markers = [], flag=false;
-var market, infowindow, infowindows=[];
+let map, locationTitle=[], locationCoord=[], listTitle = [], listCoord=[], markers = [],listDest=[], flag=false;
+var market, infowindow, infowindows=[],flagSearch=false;
 
 //Attrib API fourSquare
 var  clientID = "U2EL1IZE2JQUXYE1JRS2RXS3KS3UPRJ0NKAB5SSOD5GATE3T";
@@ -13,27 +13,7 @@ var apiUrl ='https://api.foursquare.com/v2/venues/search?ll=' + cor.lat + ',' + 
             '&v=20170708' + '&m=foursquare';
 return apiUrl.toString();
 }
-//main
-$(document).ready(function(){
-$('#txtFind').click(function(e){
-  if($('#menuFind').hasClass('MenuFind'))
-  {
-    hideMenu();
-    resetMark(null);
-    flag=false;
-    removeInMenu();
-    viewModel.filterQuery("");
-  }
-  else {
-    showMenu();
-    viewModel.filterQuery("");
-  }
-});
-$('#txtFind').keyup(function(e){
-  desployMenu(e);
-});
 
-});
 //function
 //initialize the map
 
@@ -52,18 +32,10 @@ function initMap() {
     {title: 'Aeropuerto de trinidad',  location:{lat:  -14.821583, lng: -64.917416} },
   ]; 
   inizileArray(location);
-  
+  addInMenu(locationTitle, locationCoord);
+  flagV=true;
 }
-function showMenu()
-{
-  $('#menuFind').removeClass();
-  $('#menuFind').addClass('MenuFind');
-}
-function hideMenu()
-{
-  $('#menuFind').removeClass();
-  $('#menuFind').addClass('MenuFindHidden');
-}
+
 //initialize the array
 function inizileArray(location){
   for(let x=0;x<location.length;x++)
@@ -73,15 +45,23 @@ function inizileArray(location){
   }
 }
 
-function markMessage(x,content){
+function markMessage(x){
   markers[x].addListener('click', function() {
+    closeAnimationAndMessage();
     infowindows[x].open(map, markers[x]);
     AnimationMark(x);
     });
 }
+function closeAnimationAndMessage()
+{
+  for(let i=0; i<markers.length;i++)
+  {
+    markers[i].setAnimation(null);
+    infowindows[i].close();
+  }
+}
 //create the mark in the map
 function mark(title, coord){
- 
   
   market= new google.maps.Marker({
     position: coord,
@@ -91,18 +71,14 @@ function mark(title, coord){
     animation: google.maps.Animation.DROP
   });
   markers.push(market); 
-  
   infowindow= new google.maps.InfoWindow();
   apiFourSquare(market,coord,title,infowindow);
   infowindows.push(infowindow);
 }
 
 function AnimationMark(x) {
-  if (markers[x].getAnimation() !== null) {
-    markers[x].setAnimation(null);
-  } else {
-    markers[x].setAnimation(google.maps.Animation.BOUNCE);
-  }
+  
+  markers[x].setAnimation(google.maps.Animation.BOUNCE);
 }
 //show or remove mark dependent of the parameter
 function setMapAll(map) {
@@ -116,7 +92,8 @@ function resetMark()
 {
   setMapAll(null);
   markers = [];
-  infowindows=[];
+ infowindows=[];
+ viewModel.ArrayMenu.length=0;
 }
 //search for a string given by the input
 function findForChar(val)
@@ -125,7 +102,6 @@ function findForChar(val)
   
   listTitle=[];
   listCoord=[];
-console.log(val);
   let flag = false;
     for(let x=0; x<locationTitle.length;x++)
     {       
@@ -143,62 +119,56 @@ function addInMenu(listDestiny,listCoordMark)
 {
   resetMark();
   removeInMenu();
-  let destiny, coordDestiny;
+  let destiny, coordDestiny, pos=0;;
+  listDest=[];
   for(let x=0;x<listDestiny.length;x++)
   {
     if(listDestiny[x]!=undefined)
     {
-      var idButtom="buttom"+x;
-      $('#menuFind').append("<div class='buttom' id='"+idButtom.toString()+"' onClick=onlyOneMark("+x+")><p style='color: white'>"+listDestiny[x]+"</p></div>");    
-      destiny=listDestiny[x];
-      coordDestiny=listCoordMark[x];
-      
-      
-      mark(destiny,coordDestiny);
-      
+      listDest[pos]=listDestiny[x];
+      coordDestiny=listCoordMark[x];   
+      viewModel.ArrayMenu.push(new viewMenu(listDest[pos]));     
+      mark(listDest[pos],coordDestiny);   
+      pos++;  
     }
   }
+  console.log(listDest+"addin menu Array"); 
   setMapAll(map);
+  
 }
 //select one mark with one click in its name
-function onlyOneMark(id)
+function onlyOneMark(id,l)
 {
-var idjQuery = "#buttom"+id+" p";
-viewModel.filterQuery($(idjQuery.toString()).html());
-desployMenu(0);
+  
+  
+    for(let x=0;x<l.length;x++)
+    {
+      if(l[x]===id)
+      {       
+        closeAnimationAndMessage();
+        AnimationMark(x);
+        infowindows[x].open(map, markers[x]);
+      }
+    }
+    
+ 
+ 
 }
 function removeInMenu(){
+  viewModel.ArrayMenu.length=0;
   $('#menuFind').empty();
 }
 //unfold the menu
-function desployMenu(e){
+function desployMenu(){
 
-  if(e.which===13)
-  { 
-    if(flag===false){
-      addInMenu(locationTitle, locationCoord);
-      showMenu();
-      flag=true;
-    }   
-    else{
-      resetMark(null);
-      flag=false;
-      removeInMenu();
-      hideMenu();
-    }
-    
-  }
-  else if(e.which===8 && viewModel.filterQuery()==="")
-  {   
-      resetMark(null);
-      removeInMenu(); 
-      hideMenu();  
-  }
-  else {
-    showMenu();
+    flagV=false;
+    flagSearch=true;
     findForChar(viewModel.filterQuery());  
+    console.log(listTitle);    
     addInMenu(listTitle, listCoord);
-  }
+    flagV=true;
+    
+ 
 }
 
 //Functions api
@@ -227,6 +197,10 @@ $.getJSON(url).done(function(mar) {
       "The data could not be loaded from FourSquare, please try to reload the page."
   );
 });
+}
+//error api map
+function errorMap(){
+  alert("The map could not be loaded from google map, please try to reload the page");
 }
 
 

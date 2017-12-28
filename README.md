@@ -25,19 +25,17 @@ to execute it you must download all the files in the folder which are:
 
 the use of the page is done as follows with the search engine located in the upper left.
 
-* A click on the search engine displays the empty menu where the names of the locations will be loaded.
+* double click in index.html
 
-* Once in the search engine the enter key makes us show all the sites on the map and fill the empty menu with the names of each one from where we can select only one if we wish.
-
-* A second enter causes the expanded menu to be hidden.
+* Displays the left menu where the names of the locations will be loaded.
 
 * You can also write in the search engine and the locations will appear whenever it contains in your name the text that you entered in the search engine, this automatically without the need to press the enter key.
 
 * The same happens if once you see a text written in the search engine you start deleting it, the locations will be updated.
 
-* if after selecting a location click on the search engine this is blank so you can perform a new search.
+* if after selecting a location click on the search engine this is can modify so you can perform a new search.
 
-* If you delete all the text written in the search engine with the backspace key the menu will remove the displayed locations on the screen and the menu will hide
+* If you delete all the text written in the search engine with the backspace key the menu display all locations on the screen.
 
 * If you enter by means of a cell phone the web page is adjusted and the search engine grows and occupies the entire width.
 

@@ -10,17 +10,21 @@
     <script src="js/viewModel.js" defer="defer"></script>
     <script src="js/app.js" defer="defer"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBU9_t5K1z6XJVyDHJjl4yphHf2MkAnav0&callback=initMap"
-    async defer></script>
+    async defer onerror="errorMap()"></script>
+    
   </head>
   <body>
     <div id="find">
       <input id='txtFind' type="text" data-bind="value: filterQuery, valueUpdate:'afterkeydown'" placeholder="Filter"/>
     </div>
     <div id="content">
-    <div id="menuFind" class="MenuFindHidden" >
-
+    <div id="menuFind" class="MenuFind" data-bind="template : {name : 'postRow', foreach: ArrayMenu}">
+      
     </div>
     <div id="map" class="mapComplete"></div>
   </div>
+  <script type="text/html" id="postRow" defer="defer">                  
+    <div class="buttom" data-bind="text: title, click: viewModel.functSelectOne(title)" ></div>     
+</script>
   </body>
 </html>
