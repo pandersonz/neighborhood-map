@@ -6,6 +6,29 @@
   height: 100%;
   width: 100%;
 }
+.bar{
+  width: 100%;
+  height: 5%;
+  display: flex;
+  background-color: #000000;
+  justify-content: space-around;
+}
+.buttomBar{
+  width: 8%;
+  height: auto;
+  color: white;
+  background-color: #000000;
+  text-align: right;
+  cursor: pointer;
+}
+.buttomBar:hover{
+  width: 8%;
+  height: auto;
+  background-color: darkslategray;
+  color: black;
+  text-align: right;
+  cursor: pointer;
+}
 #txtFind{
   width: 15%;
   -moz-border-radius: 10px;
@@ -38,7 +61,7 @@ html, body {
 }
 #find{
   width: 100%;
-  height: 5%;
+  height: auto;
   background-color: black;
   display: flex;
   justify-content: space-between;
@@ -53,6 +76,7 @@ html, body {
   text-align: left;
   color: white;
   font:20px;
+  cursor: pointer;
 }
 .buttom:hover{
   width: 100%;
@@ -61,6 +85,7 @@ html, body {
   margin: 0 auto;
   padding: 0;
   text-align: left;
+  cursor: pointer;
 }
 @media screen and (max-width: 700px) {
   #txtFind{

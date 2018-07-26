@@ -14,8 +14,11 @@
     
   </head>
   <body>
-    <div id="find">
-      <input id='txtFind' type="text" data-bind="value: filterQuery, valueUpdate:'afterkeydown'" placeholder="Filter"/>
+    <div class="bar">
+      <div id="find">
+        <input id='txtFind' type="text" data-bind="value: filterQuery, valueUpdate:'afterkeydown'" placeholder="Filter"/>
+      </div>
+      <div class="buttomBar">Add Pointer</div>
     </div>
     <div id="content">
     <div id="menuFind" class="MenuFind" data-bind="template : {name : 'postRow', foreach: ArrayMenu}">
